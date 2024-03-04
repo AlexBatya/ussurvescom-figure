@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import axios from 'axios'; 
 import ReactDOM from 'react-dom';
 import './figures.components.scss'
-import xml2js from 'xml2js';
-import fs from 'fs';
+// import Form from 'react-bootstrap/Form';
+
 
 import {
     Chart as ChartJS,
@@ -14,7 +15,7 @@ import {
     Legend
 } from 'chart.js';
 
-import {Line} from 'react-chartjs-2';
+import {Line, Chart} from 'react-chartjs-2';
 
 ChartJS.register(
     LineElement,
@@ -25,80 +26,104 @@ ChartJS.register(
     Legend    
 );
 
-export function Figure(){
+function Figure(props: any){
 
     const data: any = {
-        labels: [1, 2, 3],
+        labels: props.time,
         datasets: [
             {
                 label: "Время, с",
-                data: [1, 13, 44],
-                borderColor: "black",
-                backgroundColor: 'black',
+                data: props.weight,
+                borderColor: "#467996",
+                // backgroundColor: '#467996',
                 tension: 0.4
             }
         ]
     }
 
     const options: any = {
-        
+        title: {
+            display: true,
+            text: "График проездов"
+        }
     };
 
     return (
         <div className = 'figure'>
-            <h1>hi, bro</h1>
             <Line
+            options = {{
+                elements: {
+                    line: {
+                        tension: 0.1,
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Вес, кг"
+                        },
+                        beginAtZero: true,
+                        suggestedMin: 5,
+                        suggestedMax: 50     
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Время, c"
+                        },
+                        suggestedMin: Date.now() - 1000 * 60 * 60 * 24 * 30,
+                        suggestedMax: Date.now(),
+                    },
+                }
+            }}
             data = {data} 
-            options = {options}
             ></Line>
-            <Button></Button>
         </div>
     )
 }
 
-function Button(){
+export function Figures(){
+    const [link, setLink] = useState(0);
+    const [weight, setWeight] = useState(0);
+    const [time, setTime] = useState(0);
 
     const handleFileChange = (e: any) => {
         const file = e.target.files[0];
-        const link = file.path;
-        let reader = new FileReader();
-        reader.readAsDataURL(link);
-        // console.log(test);
-        // Weight(link);
+        const fileLink = file.path;
+        setLink(fileLink);
     }
+
+    const axiosConfigAsync = async (data: any) => {
+        return await axios({
+            method: "post",
+            url: "http://localhost:3002/",
+            headers: {},
+            data: data
+        })
+    } 
+
+    const resultAxios = async() => {
+        const res: any = axiosConfigAsync({
+            link: link
+        })
+        const ress: any = await res;
+        setWeight(ress.data.weight)
+        setTime(ress.data.time)
+        console.log(typeof ress.data.weight)
+        console.log(typeof ress.data.time)
+    }
+
+    useEffect(() => {
+        console.log(resultAxios()) 
+    }, [link])
 
     return (
         <div>
+            <h1 className = 'title'>График проездов</h1>
             <input onChange = {handleFileChange} className = 'openFigure' name = 'openFigure' type="file" />
+            <Figure weight = {weight} time = {time} />
+            {/* <Figure  /> */}
         </div>
     )
-}
-
-async function Weight(link: string){
-
-    // fs.readFile(link, async (err: any, data: any) => {
-//         if(err) throw new Error(err);
-
-//         const parser = new xml2js.Parser();
-
-//         const parserData: any = await parser.parseStringPromise(data)
-//             console.log(parserData)
-            // .then((res: any) => {
-            //     // console.log(res);
-            //     let weight = [];
-            //     let time = [];
-            //     // console.log(res.DATAPACKET.ROWDATA[0].ROW[0])
-            //     for(let elem of res.DATAPACKET.ROWDATA[0].ROW){
-            //         weight.push(elem.$.OSWES);
-            //     }
-            //     for(let i: number = 0; i < weight.length; i++){
-            //         time.push(i)
-            //     }
-            //     console.log(weight.length)
-            //     console.log(time.length)
-            // })
-            // .catch((err) => {
-            //     console.log(err)
-            // })
-        // })
 }

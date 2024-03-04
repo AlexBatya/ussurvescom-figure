@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import {Figure} from "./components/figures.components";
+import {Figures} from "./components/figures.components";
 
 function Index(){
 	return (
-		<Figure />
+		<Figures />
 	)
 }
 
