@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain, remote, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, remote, Menu, dialog } = require('electron');
 import fs from 'fs';
 import path from 'path';
+import weight from './electron/weight';
 
 const template = [
   {
@@ -8,29 +9,16 @@ const template = [
     submenu: [
       {
         label: "Открыть",
+        click: async () => {
+            const linkArray: any = await dialog.showOpenDialog({});
+            const link: any = linkArray.filePaths[0];  
+            console.log(link.toString('cp1251'));
+            // const result: any = await weight(link);
+            // console.log(result.time)
+        }
       },
-      {
-        label: "Соси",
-      },
-      {
-        label: "Дрочи",
-      }
     ]
   },
-  {
-    label: "Настройки",
-    submenu: [
-      {
-        label: "Иди"
-      },
-      {
-        label: "На"
-      },
-      {
-        label: "Хуй"
-      }
-    ]
-  }
 ]
 
 function noteWindow(){
@@ -48,22 +36,17 @@ function noteWindow(){
 
 function createWindow () {
   // Create the browser window.
-  // const menu = Menu.buildFromTemplate(template);
-  // Menu.setApplicationMenu(menu);
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+  
   let win = new BrowserWindow({
     icon: path.join(__dirname, 'logo.ico'),
     // transparent: true,
-    title: 'Ussurvescom-figures',
-    // frame: true,
-    width: 800,
-    height: 650,
-    // maxWidth: 250,
-    // maxHeight: 250,
-    // minWidth: 250,
-    // minHeight: 250,
-    // x: 1000,
-    // y: 700,
+    title: 'Уссурвеском-Графики',
+    width: 1000,
+    height: 800,
     webPreferences: {
+      encoding: 'UTF-8',
       preload: path.join(__dirname, 'preload.js')
     }
   });
