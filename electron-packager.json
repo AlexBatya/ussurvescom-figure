@@ -1,0 +1,22 @@
+{
+    "appId": "com.example.myapp",
+    "artifactName": "productName−{version}.${ext}",
+    "copyright": "Copyright © 2021",
+    "directories": {
+    "output": "release"
+    },
+    "files": [
+        "../package.json",
+        "./build/index.html",
+        {
+        "from": "./app/src",
+        "to": "./app",
+        "filter": ["**/*"]
+        }
+    ],
+    "win": {
+        "icon": "./build/logo.ico",
+        "target": "nsis",
+        "publish": "Ussur"
+    }
+}

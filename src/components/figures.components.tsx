@@ -28,42 +28,67 @@ ChartJS.register(
     Legend    
 );
 
+const datasets = (weight: any) => {
+    const data: any = [];
 
+    for(let i = 0; i < weight.length; i++){
+        if(sensors[i].open == true){
+            data.push({
+                label: sensors[i].title,
+                data: weight[i],
+                borderColor: sensors[i].color,
+                // backgroundColor: sensors[i].color,
+                tension: 0.01,
+                pointRadius: 0.01 
+            })
+        }
+        
+    }
+
+    return data;
+}
 
 const sensors = [
     {
         name: "OSWES",
-        open: false,
+        title: "Вес по осям",
+        open: true,
         color: "#467996"
     },
     {
         name: "WES12",
-        open: false,
+        title: "Вес 1-2",
+        open: true,
         color: "#8B0000"
     },
     {
         name: "WES34",
-        open: false,
+        title: "Вес 3-4",
+        open: true,
         color: "#32CD32"
     },
     {
         name: "WES56",
-        open: false,
+        title: "Вес 5-6",
+        open: true,
         color: "#008080"
     },
     {
         name: "WES78",
-        open: false,
+        title: "Вес 7-8",
+        open: true,
         color: "#BA55D3"
     },
     {
         name: "WES910",
-        open: false,
+        title: "Вес 9-10",
+        open: true,
         color: "#4B0082"
     },
     {
         name: "WES1112",
-        open: false,
+        title: "Вес 11-12",
+        open: true,
         color: "#000080"
     },
 ]
@@ -72,22 +97,16 @@ const sensors = [
 
 function Figure(props: any){
 
-    const data: any = {
+    const data = {
         title: {
             display: true,
             text: 'Вес'
         },
         labels: props.time,
-        datasets: [
-            {
-                label: "Время, с",
-                data: props.weight,
-                borderColor: sensors[0].color,
-                tension: 0.01,
-                pointRadius: 0.01
-            }        
-        ]
+        datasets: datasets(props.weight) 
     }
+
+
     return (
         <div className = 'figure'>
             <Line
@@ -128,6 +147,8 @@ export function Figures(){
     const [weight, setWeight] = useState(0);
     const [time, setTime] = useState(0);
 
+    const [test, setTest] = useState(sensors); //test
+
     const handleFileChange = (e: any) => {
         const file = e.target.files[0];
         const fileLink = file.path;
@@ -137,7 +158,7 @@ export function Figures(){
     const axiosConfigAsync = async (data: any) => {
         return await axios({
             method: "post",
-            url: "http://localhost:3002/",
+            url: "http://localhost:3002/all",
             headers: {},
             data: data
         })
@@ -146,7 +167,7 @@ export function Figures(){
     const resultAxios = async() => {
         const res: any = axiosConfigAsync({
             link: link,
-            sensor: sensors[0].name
+            sensors: sensors.map((elem: any) => elem.name)
         })
         const ress: any = await res;
         setWeight(ress.data.weight)
@@ -167,30 +188,58 @@ export function Figures(){
         <div style = {style}>
             <h1 className = 'title'>График проездов</h1>
             <input onChange = {handleFileChange} className = 'openFigure' name = 'openFigure' type="file" />
-            <Inputs />
+            {/* <Inputs test = {test} setTest = {setTest}/> */}
             <div style = {{width: "100%", height: "100%"}}>
-                <Figure weight = {weight} time = {time} />
+                <Figure test = {test} weight = {weight} time = {time} />
             </div>
-            {/* <Figure  /> */}
         </div>
     )
 }
 
 function Input(props: any){
+    const [click, setClick] = useState(false);
+
     const style: any = {
         display: 'flex',
         justifyContent: "center",
         alignItems: "center",
-        gap: "10px"
+        gap: "5px"
     }
+
+    const handleClick = () => {
+        if(click == false){
+            setClick(true);
+            props.test.map((elem: any) => {
+                if(props.id == elem.name){
+                    elem.open = true;
+                    props.setTest(props.test)
+                    // console.log(props.test)
+                }
+            })
+        }
+        else{
+            setClick(false);
+            props.test.map((elem: any) => {
+                if(props.id == elem.name){
+                    elem.open = false;
+                    props.setTest(props.test)
+                    // console.log(props.test)
+                }
+            })
+        }
+    }
+
     return(
         <label style = {style} htmlFor="">
-            <input value = {props.value} id = {props.id} type = 'checkbox' /> {props.children}
+            <input onClick={handleClick} id = {props.id} type = 'checkbox' /> <small>{props.children}</small>
+            <small>{`${click}`}</small>
         </label> 
     )
 }
 
-function Inputs(){
+function Inputs(props: any){
+
+
     const style: any = {
         display: 'flex',
         justifyContent: "center",
@@ -198,15 +247,12 @@ function Inputs(){
         flexWrap: "wrap",
         fontFamily: "Arial, Helvetica, sans-serif"
     } 
+
+    const text = ['Вес по осям', 'Вес 1-2', 'Вес 3-4', 'Вес 5-6', 'Вес 7-8', 'Вес 9-10', 'Вес 11-12']
+
     return (
         <div style = {style}>
-            <Input value = "all" id = "all">Вес</Input>
-            <Input value = "12" id = '12'>Вес 1-2</Input>
-            <Input value = "34" id = '34'>Вес 3-4</Input>
-            <Input value = "56" id = '56'>Вес 5-6</Input>
-            <Input value = "78" id = '78'>Вес 7-8</Input>
-            <Input value = "910" id = '910'>Вес 9-10</Input>
-            <Input value = "1112" id = '1112'>Вес 11-12</Input>
+            {text.map((elem: any, i: number) => <Input test = {props.test} setTest = {props.setTest} id = {sensors[i].name}>{elem}</Input>)}
         </div>
     )
 }
