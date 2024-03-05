@@ -19,6 +19,17 @@ const template = [
       },
     ]
   },
+  // {
+  //   label: "Описание",
+  // },
+  // {
+  //   label: "Обновления",
+  //   submenu: [
+  //     {
+
+  //     }
+  //   ]
+  // }
 ]
 
 function noteWindow(){
@@ -36,13 +47,13 @@ function noteWindow(){
 
 function createWindow () {
   // Create the browser window.
-  const menu = Menu.buildFromTemplate(template);
-  Menu.setApplicationMenu(menu);
+  // const menu = Menu.buildFromTemplate(template);
+  // Menu.setApplicationMenu(menu);
   
   let win = new BrowserWindow({
     icon: path.join(__dirname, 'logo.ico'),
     // transparent: true,
-    title: 'Уссурвеском-Графики',
+    title: 'Уссурвеском-Графики 1.0.0',
     width: 1000,
     height: 800,
     webPreferences: {

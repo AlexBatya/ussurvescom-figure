@@ -29,6 +29,45 @@ ChartJS.register(
 );
 
 
+
+const sensors = [
+    {
+        name: "OSWES",
+        open: false,
+        color: "#467996"
+    },
+    {
+        name: "WES12",
+        open: false,
+        color: "#8B0000"
+    },
+    {
+        name: "WES34",
+        open: false,
+        color: "#32CD32"
+    },
+    {
+        name: "WES56",
+        open: false,
+        color: "#008080"
+    },
+    {
+        name: "WES78",
+        open: false,
+        color: "#BA55D3"
+    },
+    {
+        name: "WES910",
+        open: false,
+        color: "#4B0082"
+    },
+    {
+        name: "WES1112",
+        open: false,
+        color: "#000080"
+    },
+]
+
 // ChartJS.register(Zoom);
 
 function Figure(props: any){
@@ -43,10 +82,10 @@ function Figure(props: any){
             {
                 label: "Время, с",
                 data: props.weight,
-                borderColor: "#467996",
+                borderColor: sensors[0].color,
                 tension: 0.01,
                 pointRadius: 0.01
-            }
+            }        
         ]
     }
     return (
@@ -85,7 +124,6 @@ function Figure(props: any){
 }
 
 export function Figures(){
-    const sensor: string[] = ['OSWES', 'WES12', 'WES34', 'WES56', 'WES78', 'WES910', 'WES1112']
     const [link, setLink] = useState(0);
     const [weight, setWeight] = useState(0);
     const [time, setTime] = useState(0);
@@ -108,7 +146,7 @@ export function Figures(){
     const resultAxios = async() => {
         const res: any = axiosConfigAsync({
             link: link,
-            sensor: sensor[2]
+            sensor: sensors[0].name
         })
         const ress: any = await res;
         setWeight(ress.data.weight)
